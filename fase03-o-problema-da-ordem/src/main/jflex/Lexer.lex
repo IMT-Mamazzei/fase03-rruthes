@@ -38,7 +38,7 @@ Number = [0-9]+(\.[0-9]+)?([Ee][+-]?[0-9]+)?
 Letter = [a-zA-Z]
 Digit  = [0-9]
 Identifier = {Letter}({Letter}|{Digit}|_){0,31}
-OversizedIdentifier = {Letter}({Letter}|{Digit}|_){32,}
+OversizedIdentifier = {Letter}({Letter}|{Digit}|_)*
 
 %%
 /* ========================================================================= */
@@ -57,34 +57,29 @@ OversizedIdentifier = {Letter}({Letter}|{Digit}|_){32,}
     "while"         { return symbol(sym.WHILE); }
 
     /* TODO 4: Pontuação ( ) { } ; */
-    \(              { return symbol(sym.LPAREN); }
-    \)              { return symbol(sym.RPAREN); }
-    \{              { return symbol(sym.LBRACE); }
-    \}              { return symbol(sym.RBRACE); }
-    \;              { return symbol(sym.SEMI); }
+    "("             { return symbol(sym.LPAREN); }
+    ")"             { return symbol(sym.RPAREN); }
+    "{"             { return symbol(sym.LBRACE); }
+    "}"             { return symbol(sym.RBRACE); }
+    ";"             { return symbol(sym.SEMI); }
 
     /* TODO 5: Operadores de Atribuição e Relacionais (=, ==, !=, <, >, <=, >=) */
     /* CUIDADO COM A ORDEM! O JFlex casa a regra que aparece primeiro se houver empate de tamanho. */
     /* Coloque os operadores duplos antes dos simples! */
-    "=="            { return symbol(sym.REL_OP, yytext()); }
-    "!="            { return symbol(sym.REL_OP, yytext()); }
-    "<="            { return symbol(sym.REL_OP, yytext()); }
-    ">="            { return symbol(sym.REL_OP, yytext()); }
-    "<"             { return symbol(sym.REL_OP, yytext()); }
-    ">"             { return symbol(sym.REL_OP, yytext()); }
     "="             { return symbol(sym.ASSIGN); }
+    "==" | "!=" | "<=" | ">=" | "<" | ">"   { return symbol(sym.REL_OP, yytext()); }
 
     /* TODO 6: Operadores Matemáticos (+, -, *, /, %) */
     /* Dica: "+" | "-" retornam Tag.ADD_OP. Os outros retornam Tag.MUL_OP */
     "+" | "-"       { return symbol(sym.ADD_OP, yytext()); }
-    "*" | "/" | "%"  { return symbol(sym.MUL_OP, yytext()); }
-
-    /* Identificadores grandes demais (Captura o erro) */
-    {OversizedIdentifier} { throw new RuntimeException("Erro Léxico: Identificador gigante -> " + yytext()); }
+    "*" | "/" | "%" { return symbol(sym.MUL_OP, yytext()); }
 
     /* Regras para as Macros */
     {Identifier}    { return symbol(sym.ID, yytext()); }
     {Number}        { return symbol(sym.NUMBER, yytext()); }
+
+    /* Identificadores grandes demais (Captura o erro) */
+   {OversizedIdentifier} { throw new RuntimeException("Erro Léxico: Identificador gigante -> " + yytext()); }
 
     /* Fallback: Qualquer outro caractere não reconhecido gera um Erro */
     .   {throw new RuntimeException("Erro Léxico: Caractere Ilegal -> " + yytext()); }

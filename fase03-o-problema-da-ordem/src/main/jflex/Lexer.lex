@@ -79,12 +79,12 @@ OversizedIdentifier = {Letter}({Letter}|{Digit}|_){32,}
     "+" | "-"       { return symbol(sym.ADD_OP, yytext()); }
     "*" | "/" | "%"  { return symbol(sym.MUL_OP, yytext()); }
 
+    /* Identificadores grandes demais (Captura o erro) */
+    {OversizedIdentifier} { throw new RuntimeException("Erro Léxico: Identificador gigante -> " + yytext()); }
+
     /* Regras para as Macros */
     {Identifier}    { return symbol(sym.ID, yytext()); }
     {Number}        { return symbol(sym.NUMBER, yytext()); }
-
-    /* Identificadores grandes demais (Captura o erro) */
-   {OversizedIdentifier} { throw new RuntimeException("Erro Léxico: Identificador gigante -> " + yytext()); }
 
     /* Fallback: Qualquer outro caractere não reconhecido gera um Erro */
     .   {throw new RuntimeException("Erro Léxico: Caractere Ilegal -> " + yytext()); }

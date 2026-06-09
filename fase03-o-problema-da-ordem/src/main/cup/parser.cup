@@ -33,6 +33,7 @@ non terminal expr;
 
 /* TODO 1: Declare a precedência para resolver a ambiguidade matemática. */
 /* Dica: O operador mais embaixo tem a MAIOR precedência!                */
+%left REL_OP;
 %left ADD_OP;
 %left MUL_OP;
 

@@ -3,11 +3,23 @@ package br.maua.cic303;
 import java_cup.runtime.*;
 
 parser code {:
+    private Lexer lexer;
+    
+    public parser(Lexer lexer) {
+        this.lexer = lexer;
+    }
+    
     // Método chamado pelo CUP quando encontra um erro sintático
     public void syntax_error(Symbol cur_token) {
         throw new RuntimeException("Erro Sintático na linha " + cur_token.left + ", coluna " + cur_token.right);
     }
 :}
+
+/* ========================================================================= */
+/* CONFIGURAÇÃO DO SCANNER (LEXER)                                           */
+/* ========================================================================= */
+
+scan with {: return lexer.next_token(); :};
 
 /* ========================================================================= */
 /* DECLARAÇÃO DOS TOKENS (TERMINAIS)                                         */
